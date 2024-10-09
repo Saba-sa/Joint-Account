@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@truffle/hdwallet-provider": "^2.1.15",
     "ethers": "^6.13.3",
     "next": "14.2.14",
     "react": "^18",

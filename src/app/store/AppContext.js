@@ -1,72 +1,60 @@
-import { createContext, useContext, useReducer,useEffect } from 'react';
-// import {ethers} from "ethers";
+import { createContext, useContext, useReducer, useEffect } from 'react';
+import { ethers } from "ethers";
 import appReducer from './appReducer';
-
-const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-const moonbeamRPC = process.env.NEXT_PUBLIC_MOONBEAM_RPC_URL;
+import {
+  setProvider, setSigner, setAccount, setContract
+} from './actions';
 
 const initialState = {
-    accountId:0,
+  accountId: 0,
   accounts: [],
-  activeAccount: null, 
-  pendingRequests: [], 
-  balance: 0, 
-};
-const switchToMoonbeam = async () => {
-    try {
-        await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [
-                {
-                    chainId: '0x507', 
-                    chainName: 'Moonbase Alpha',
-                    nativeCurrency: {
-                        name: 'DEV',
-                        symbol: 'DEV',
-                        decimals: 18,
-                    },
-                    rpcUrls: ['https://rpc.api.moonbase.moonbeam.network'],
-                    blockExplorerUrls: ['https://moonbase.moonscan.io/'],
-                },
-            ],
-        });
-    } catch (error) {
-        console.error("Failed to switch network", error);
-    }
+  activeAccount: null,
+  pendingRequests: [],
+  balance: 0,
+  provider: null,
+  signer: null,
+  contract: null,
 };
 
-export const AppContext = createContext();
+const AppContext = createContext();
+
 export const AppProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(appReducer, initialState);
 
- useEffect(() => {
+  useEffect(() => {
     const initContract = async () => {
-        try {
-            if (typeof window !== 'undefined' && window.ethereum) {
-                await switchToMoonbeam();
+      try {
+        if (typeof window !== 'undefined' && window.ethereum) {
+          // Request network change (Moonbeam)
+          await window.ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [{ /*...*/ }],
+          });
 
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                dispatch({ type: 'SET_PROVIDER', payload: provider });
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          dispatch(setProvider(provider));
 
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-                const signer = provider.getSigner();
-                dispatch({ type: 'SET_SIGNER', payload: signer });
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          const signer = provider.getSigner();
+          dispatch(setSigner(signer));
 
-                const account = await signer.getAddress();
-                dispatch({ type: 'SET_ACCOUNT', payload: account });
+          const account = await signer.getAddress();
+          dispatch(setAccount(account));
 
-                const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
-                const contract = new ethers.Contract(contractAddress, abi, signer);
-                dispatch({ type: 'SET_CONTRACT', payload: contract });
-            }
-        } catch (error) {
-            console.error("Error initializing contract", error);
+          const contract = new ethers.Contract(
+            process.env.NEXT_PUBLIC_CONTRACT_ADDRESS, 
+            abi, 
+            signer
+          );
+          dispatch(setContract(contract));
         }
+      } catch (error) {
+        console.error('Error initializing contract', error);
+      }
     };
 
     initContract();
-}, []);
-
-  const [state, dispatch] = useReducer(appReducer, initialState);
+  }, []);
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
@@ -74,6 +62,7 @@ export const AppProvider = ({ children }) => {
     </AppContext.Provider>
   );
 };
+
 export const useContract = () => {
-    return useContext(AppContext);
+  return useContext(AppContext);
 };

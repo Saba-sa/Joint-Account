@@ -2,8 +2,57 @@
 import { useEffect, useState } from "react";
 import { useContract } from "./store/AppContext";
 import { useRouter } from "next/navigation";
-import { ethers } from "ethers";
-const contractAddress = '';
+import { ethers } from 'ethers';
+
+// import { createAccount, addDeposit } from './store/actions';
+//   const { state, dispatch } = useContract();
+//   const handleCreateAccount = () => {
+//     const newAccount = {/* Account data */ };
+//     dispatch(createAccount(newAccount));
+//   };
+
+//   const handleDeposit = (amount) => {
+//     dispatch(addDeposit(amount));
+//   };
+
+
+const CreateAccount = () => {
+  const { state, dispatch } = useContract();
+  const [accountAddr, setaccountAddr] = useState([
+    {
+      add1: "",
+      holdsAccount: 0,
+    },
+    {
+      add2: "",
+      holdsAccount: 0,
+    },
+    {
+      add3: "",
+      holdsAccount: 0,
+    },
+  ]);
+  const route = useRouter();
+
+  // useEffect(() => {
+  //   const t = async () => {
+  //     const [deployer] = await ethers.getSigners(); // Get the deployer account
+  //     console.log("Deploying contracts with the account:", deployer.address); // Log deployer address
+
+  //     const BankAccount = await ethers.getContractFactory("BankAccount");
+  //     const bankAccount = await BankAccount.deploy();
+  //     await bankAccount.deployed();
+
+  //     console.log("BankAccount deployed to:", bankAccount.address);
+  //   }
+  //   t()
+  // }, []);
+  async function connectToContract() {
+     const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
+        console.log('Provider created:', provider);
+    const signer =await provider.getSigner();
+    console.log('signer', signer)
+const contractAddress = '0x461351Bb638d5868Fb22f8182C82F913B61ea64A';
 const contractABI = [
   {
     "anonymous": false,
@@ -273,65 +322,24 @@ const contractABI = [
     "type": "function"
   }
 ]
-
-
-const CreateAccount = () => {
-  const { state, dispatch } = useContract();
-  const [accountAddr, setaccountAddr] = useState([
-    {
-      add1: "",
-      holdsAccount: 0,
-    },
-    {
-      add2: "",
-      holdsAccount: 0,
-    },
-    {
-      add3: "",
-      holdsAccount: 0,
-    },
-  ]);
-  const route = useRouter();
-
-  // useEffect(() => {
-  //   const t = async () => {
-  //     const [deployer] = await ethers.getSigners(); // Get the deployer account
-  //     console.log("Deploying contracts with the account:", deployer.address); // Log deployer address
-
-  //     const BankAccount = await ethers.getContractFactory("BankAccount");
-  //     const bankAccount = await BankAccount.deploy();
-  //     await bankAccount.deployed();
-
-  //     console.log("BankAccount deployed to:", bankAccount.address);
-  //   }
-  //   t()
-  // }, []);
-  async function connectToContract() {
-    // Connect to Ganache
-    const provider = new ethers.providers.JsonRpcProvider("http://127.0.0.1:7545");
-
-    // Get the signer (account) from the provider
-    const signer = provider.getSigner();
-
-    // Create a new instance of the contract
     const contract = new ethers.Contract(contractAddress, contractABI, signer);
+    console.log('contract', contract)
 
-    // Example: Call a read function
     try {
-      const value = await contract.someFunction(); // Replace with your actual function
-      console.log("Value from contract:", value);
+      const value = await contract.getAccounts(); 
+      console.log("nextAccountId from contract:", value);
     } catch (error) {
       console.error("Error calling contract function:", error);
     }
 
     // Example: Send a transaction to the contract
-    try {
-      const tx = await contract.someFunctionToSendTransaction({ value: ethers.utils.parseEther("0.1") }); // Replace with your function
-      await tx.wait(); // Wait for the transaction to be confirmed
-      console.log("Transaction confirmed");
-    } catch (error) {
-      console.error("Error sending transaction:", error);
-    }
+    // try {
+    //   const tx = await contract.someFunctionToSendTransaction({ value: ethers.utils.parseEther("0.1") }); // Replace with your function
+    //   await tx.wait(); // Wait for the transaction to be confirmed
+    //   console.log("Transaction confirmed");
+    // } catch (error) {
+    //   console.error("Error sending transaction:", error);
+    // }
   }
 
   // Call the function to connect and interact with the contract
