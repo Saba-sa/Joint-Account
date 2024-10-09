@@ -1,6 +1,7 @@
 "use client"
 import React, { useState } from 'react';
       import Siderbarowner from "./Siderbarowner";
+<<<<<<< HEAD
       import { useContract } from "../store/AppContext";
       const Sidebar=()=>{
   const [open, setOpen] = useState(false);
@@ -8,6 +9,13 @@ import React, { useState } from 'react';
   return(
 <>
     <div className=" flex flex-col w-full bg-white mx-auto">
+=======
+      const Sidebar=()=>{
+  const [open, setOpen] = useState(false);
+return(
+<>
+    <div className="container flex flex-col mx-auto bg-white">
+>>>>>>> a65fb34e3efb6b26f9242f2e869185e241984c6d
       <aside
         className="group/sidebar flex flex-col shrink-0 lg:w-[300px] w-[250px] transition-all duration-300 ease-in-out m-0 fixed z-40 inset-y-0 left-0 bg-white border-r border-r-dashed border-r-neutral-200 sidenav fixed-start loopple-fixed-start"
         id="sidenav-main"
@@ -28,10 +36,17 @@ import React, { useState } from 'react';
                 href="#"
                 className="dark:hover:text-primary hover:text-primary transition-colors duration-200 ease-in-out text-[1.075rem] font-medium dark:text-neutral-400/90 text-secondary-inverse"
               >
+<<<<<<< HEAD
                 Joint Account Id:{state.accountId}
               </a>
               <span className="text-secondary-dark dark:text-stone-500 font-medium block text-[0.85rem]">
                 Account Balance:{state.balance}
+=======
+                Account ID
+              </a>
+              <span className="text-secondary-dark dark:text-stone-500 font-medium block text-[0.85rem]">
+                Account Balance
+>>>>>>> a65fb34e3efb6b26f9242f2e869185e241984c6d
               </span>
             </div>
           </div>
@@ -44,12 +59,16 @@ import React, { useState } from 'react';
 <Siderbarowner/>
         
 
+<<<<<<< HEAD
         <div className="hidden border-b border-dashed lg:block dark:border-neutral-700/70 border-neutral-200">
         <p>Account History</p>
         <p>Account History</p>
         <p>Account History</p>
         <p>Account History</p>
         </div>
+=======
+        <div className="hidden border-b border-dashed lg:block dark:border-neutral-700/70 border-neutral-200"></div>
+>>>>>>> a65fb34e3efb6b26f9242f2e869185e241984c6d
 
        {/* in mobile screen make this accessible otherwise not */}
         {/* <div className="relative pl-3 my-5 ">
@@ -81,7 +100,13 @@ import React, { useState } from 'react';
           </div>
         </div> */}
       </aside>
+<<<<<<< HEAD
       <nav className="flex  h-auto bg-white shadow-lg rounded-lg justify-end md:h-16  ">
+=======
+<div>
+
+      <nav className="flex  h-auto w-auto bg-white shadow-lg rounded-lg justify-end md:h-16">
+>>>>>>> a65fb34e3efb6b26f9242f2e869185e241984c6d
          
           <div className="hidden w-1/5 items-center justify-evenly font-semibold md:flex">
             <button>Deposit</button>
@@ -89,6 +114,10 @@ import React, { useState } from 'react';
         </div>
       </nav>
  
+<<<<<<< HEAD
+=======
+</div>
+>>>>>>> a65fb34e3efb6b26f9242f2e869185e241984c6d
     </div>
 
 </>

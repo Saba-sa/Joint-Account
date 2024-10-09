@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 // SPDX-License-Identifier: MIT
 
+=======
+>>>>>>> a65fb34e3efb6b26f9242f2e869185e241984c6d
 pragma solidity >=0.5.0;
 
 contract BankAccount {
