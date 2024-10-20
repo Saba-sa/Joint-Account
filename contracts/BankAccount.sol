@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 // SPDX-License-Identifier: MIT
 
-=======
->>>>>>> a65fb34e3efb6b26f9242f2e869185e241984c6d
 pragma solidity >=0.5.0;
 
 contract BankAccount {
@@ -24,7 +21,7 @@ contract BankAccount {
 
     struct WithdrawRequest {
         address user;
-        uint ammount;
+        uint amount;
         uint approvals;
         mapping(address => bool) ownersApproved;
         bool approved;
@@ -55,11 +52,11 @@ contract BankAccount {
         require(owner.length + 1 <= 4, "maximun of four owners per account");
         for (uint i = 0; i < owner.length; i++) {
             if (owner[i] == msg.sender) {
-                revert("no deplicate owners");
+                revert("no duplicate owners");
             }
             for (uint j = i + 1; j < owner.length; j++) {
                 if (owner[i] == owner[j]) {
-                    revert("no deplicate owners");
+                    revert("no duplicate owners");
                 }
             }
         }
@@ -110,7 +107,8 @@ contract BankAccount {
 
     function createAccount(
         address[] calldata otherOwners
-    ) external validOwner(otherOwners) {
+    ) external  {
+    // ) external validOwner(otherOwners) {
         address[] memory owners = new address[](otherOwners.length + 1);
         owners[otherOwners.length] = msg.sender;
         uint id = nextAccountId;
@@ -119,7 +117,7 @@ contract BankAccount {
                 owners[idx] = otherOwners[idx];
             }
             if (userAccounts[owners[idx]].length > 2) {
-                revert("each user can have a max of 3 users");
+                // revert("each user can have a max of 3 users");
             }
             userAccounts[owners[idx]].push(id);
         }
@@ -137,7 +135,7 @@ contract BankAccount {
             id
         ];
         request.user = msg.sender;
-        request.ammount = amount;
+        request.amount = amount;
         nextWithdrawId++;
         emit WithdrawRequested(
             msg.sender,
@@ -146,6 +144,10 @@ contract BankAccount {
             amount,
             block.timestamp
         );
+    }
+
+    function demotest() public pure returns (string memory) {
+        return "ya ali madad";
     }
 
     function approveWithdrawl(
@@ -166,7 +168,7 @@ contract BankAccount {
         uint accountId,
         uint withdrawId
     ) external canWithdraw(accountId, withdrawId) {
-        uint amount = accounts[accountId].withdrawRequests[withdrawId].ammount;
+        uint amount = accounts[accountId].withdrawRequests[withdrawId].amount;
         require(
             accounts[accountId].balance >= amount,
             "insufficient balance to withdraw"

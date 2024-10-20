@@ -1,14 +1,12 @@
 import { createContext, useContext, useReducer, useEffect } from 'react';
 import { ethers } from "ethers";
 import appReducer from './appReducer';
-import {
-  setProvider, setSigner, setAccount, setContract
-} from './actions';
+
 
 const initialState = {
   accountId: 0,
   accounts: [],
-  activeAccount: null,
+  activeAccount: {},
   pendingRequests: [],
   balance: 0,
   provider: null,
@@ -17,52 +15,344 @@ const initialState = {
 };
 
 const AppContext = createContext();
+const AppProvider = ({ children }) => {
 
-export const AppProvider = ({ children }) => {
   const [state, dispatch] = useReducer(appReducer, initialState);
 
   useEffect(() => {
-    const initContract = async () => {
+    const providerSet = async () => {
       try {
         if (typeof window !== 'undefined' && window.ethereum) {
-          // Request network change (Moonbeam)
-          await window.ethereum.request({
-            method: 'wallet_addEthereumChain',
-            params: [{ /*...*/ }],
-          });
-
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          dispatch(setProvider(provider));
-
-          await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const signer = provider.getSigner();
-          dispatch(setSigner(signer));
-
+          const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
+          const signer = await provider.getSigner(); // Change to directly get signer
           const account = await signer.getAddress();
-          dispatch(setAccount(account));
+          dispatch({ type: 'SET_PROVIDER', payload: provider });
+          dispatch({ type: 'SET_SIGNER', payload: signer });
+          dispatch({ type: 'SET_ACCOUNT', payload: account });
 
-          const contract = new ethers.Contract(
-            process.env.NEXT_PUBLIC_CONTRACT_ADDRESS, 
-            abi, 
-            signer
-          );
-          dispatch(setContract(contract));
+          await initContract(signer);
+        } else {
+          console.error("Ethereum provider not found.");
         }
       } catch (error) {
-        console.error('Error initializing contract', error);
+        console.error('Error initializing provider and signer', error);
       }
     };
 
-    initContract();
+    providerSet();
   }, []);
+
+  const initContract = async (signer) => {
+    try {
+      const contractAddress = '0xb85E416be9295d0dA53647F0CA93478E56D59371'; // Your updated contract address
+      const contractABI = [
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": false,
+              "internalType": "address[]",
+              "name": "owners",
+              "type": "address[]"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "id",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "timestmap",
+              "type": "uint256"
+            }
+          ],
+          "name": "AccountCreated",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "accountId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ],
+          "name": "Deposit",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "withdrawId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ],
+          "name": "Withdraw",
+          "type": "event"
+        },
+        {
+          "anonymous": false,
+          "inputs": [
+            {
+              "indexed": true,
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "accountId",
+              "type": "uint256"
+            },
+            {
+              "indexed": true,
+              "internalType": "uint256",
+              "name": "withdrawId",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "ammount",
+              "type": "uint256"
+            },
+            {
+              "indexed": false,
+              "internalType": "uint256",
+              "name": "timestamp",
+              "type": "uint256"
+            }
+          ],
+          "name": "WithdrawRequested",
+          "type": "event"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "accountId",
+              "type": "uint256"
+            }
+          ],
+          "name": "deposit",
+          "outputs": [],
+          "stateMutability": "payable",
+          "type": "function",
+          "payable": true
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address[]",
+              "name": "otherOwners",
+              "type": "address[]"
+            }
+          ],
+          "name": "createAccount",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "accountId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            }
+          ],
+          "name": "requestWithdrawal",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [],
+          "name": "demotest",
+          "outputs": [
+            {
+              "internalType": "string",
+              "name": "",
+              "type": "string"
+            }
+          ],
+          "stateMutability": "pure",
+          "type": "function",
+          "constant": true
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "accountId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "withdrawId",
+              "type": "uint256"
+            }
+          ],
+          "name": "approveWithdrawl",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "accountId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "withdrawId",
+              "type": "uint256"
+            }
+          ],
+          "name": "withdraw",
+          "outputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "accountId",
+              "type": "uint256"
+            }
+          ],
+          "name": "getBalance",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "accountId",
+              "type": "uint256"
+            }
+          ],
+          "name": "getOwners",
+          "outputs": [
+            {
+              "internalType": "address[]",
+              "name": "",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "accountId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "withdrawId",
+              "type": "uint256"
+            }
+          ],
+          "name": "getApprovals",
+          "outputs": [
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
+        },
+        {
+          "inputs": [],
+          "name": "getAccounts",
+          "outputs": [
+            {
+              "internalType": "uint256[]",
+              "name": "",
+              "type": "uint256[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
+        }
+      ];
+
+      if (signer && contractAddress && contractABI) {
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+        dispatch({ type: 'SET_CONTRACT', payload: contract });
+      } else {
+        console.error('Signer, contract address, or ABI is missing.');
+      }
+    } catch (error) {
+      console.error('Error initializing contract', error);
+    }
+  };
+
+
 
   return (
     <AppContext.Provider value={{ state, dispatch }}>
       {children}
     </AppContext.Provider>
   );
+
 };
 
-export const useContract = () => {
-  return useContext(AppContext);
-};
+export { AppContext, AppProvider };

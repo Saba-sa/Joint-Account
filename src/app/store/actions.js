@@ -8,14 +8,15 @@ export const SET_PROVIDER = 'SET_PROVIDER';
 export const SET_SIGNER = 'SET_SIGNER';
 export const SET_ACCOUNT = 'SET_ACCOUNT';
 export const SET_CONTRACT = 'SET_CONTRACT';
+
 export const createAccount = (account) => ({
   type: CREATE_ACCOUNT,
   payload: account,
 });
 
-export const setActiveAccount = (account) => ({
+export const setActiveAccount = (activeAccount) => ({
   type: SET_ACTIVE_ACCOUNT,
-  payload: account,
+  payload: activeAccount,
 });
 
 export const addDeposit = (amount) => ({
