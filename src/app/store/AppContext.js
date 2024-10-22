@@ -44,7 +44,7 @@ const AppProvider = ({ children }) => {
 
   const initContract = async (signer) => {
     try {
-      const contractAddress = '0xb85E416be9295d0dA53647F0CA93478E56D59371'; // Your updated contract address
+      const contractAddress = '0x16EB2f0Cb3f23Ae18EEB388EfeE1EF8E2e817b0a'; // Your updated contract address
       const contractABI = [
         {
           "anonymous": false,

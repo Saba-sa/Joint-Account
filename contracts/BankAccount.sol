@@ -105,10 +105,8 @@ contract BankAccount {
         accounts[accountId].balance += msg.value;
     }
 
-    function createAccount(
-        address[] calldata otherOwners
-    ) external  {
-    // ) external validOwner(otherOwners) {
+    function createAccount(address[] calldata otherOwners) external {
+        // ) external validOwner(otherOwners) {
         address[] memory owners = new address[](otherOwners.length + 1);
         owners[otherOwners.length] = msg.sender;
         uint id = nextAccountId;
@@ -146,10 +144,6 @@ contract BankAccount {
         );
     }
 
-    function demotest() public pure returns (string memory) {
-        return "ya ali madad";
-    }
-
     function approveWithdrawl(
         uint accountId,
         uint withdrawId
@@ -178,6 +172,63 @@ contract BankAccount {
         (bool sent, ) = payable(msg.sender).call{value: amount}("");
         require(sent);
         emit Withdraw(withdrawId, block.timestamp);
+    }
+
+    function getAccountDetails(
+        uint accountId
+    ) public view returns (address[] memory, uint) {
+        Account storage account = accounts[accountId];
+        return (account.owners, account.balance);
+    }
+
+    function seeWithDrawRequest(
+        uint _accountId,
+        uint _withdrawId
+    )
+        public
+        view
+        returns (
+            address user,
+            uint amount,
+            uint approvals,
+            bool approved,
+            address[] memory approvingOwners
+        )
+    {
+        WithdrawRequest storage request = accounts[_accountId].withdrawRequests[
+            _withdrawId
+        ];
+        Account storage account = accounts[_accountId];
+
+        // Count the number of approvals first to create an array of correct size
+        uint approvingOwnersCount;
+        for (uint i = 0; i < account.owners.length; i++) {
+            if (request.ownersApproved[account.owners[i]]) {
+                approvingOwnersCount++;
+            }
+        }
+
+        // Create an array of the correct size to store approving owners' addresses
+        address[] memory ownersWhoApproved = new address[](
+            approvingOwnersCount
+        );
+        uint currentIndex;
+
+        // Fill the array with addresses of owners who approved
+        for (uint i = 0; i < account.owners.length; i++) {
+            if (request.ownersApproved[account.owners[i]]) {
+                ownersWhoApproved[currentIndex] = account.owners[i];
+                currentIndex++;
+            }
+        }
+
+        return (
+            request.user,
+            request.amount,
+            request.approvals,
+            request.approved,
+            ownersWhoApproved
+        );
     }
 
     function getBalance(uint accountId) public view returns (uint) {

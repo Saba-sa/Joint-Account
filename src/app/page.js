@@ -13,16 +13,13 @@ const CreateAccount = () => {
 
   const [accountAddr, setaccountAddr] = useState([
     {
-      add1: "",
-      holdsAccount: 0
+      add1: ""
     },
     {
-      add2: "",
-      holdsAccount: 0
+      add2: ""
     },
     {
-      add3: "",
-      holdsAccount: 0
+      add3: ""
     },
   ]);
   const [userAccount, setuserAccount] = useState([]);
@@ -93,7 +90,10 @@ const CreateAccount = () => {
     }
   };
 
-
+  const openTheExistedAccount=(i)=>{
+    const details =state.contract.accounts[i];
+    console.log('Detail')
+  }
   // const checkOwners = async () => {
   //   const accounts = await state.contract.getAccounts();
 
@@ -142,7 +142,7 @@ const CreateAccount = () => {
             <h1 className="text-2xl font-semibold mb-4">Your Accounts</h1>
             <div className="flex items-center justify-between px-8 py-5">
               {accountAddr?.map((item, i) => {
-                return <div className="flex items-center mr-5" key={i}>
+                return <div className="flex items-center mr-5" key={i} onClick={()=>openTheExistedAccount(Number(item))}>
                   <div className="mr-5">
                     <div className="inline-block relative shrink-0 cursor-pointer rounded-[.95rem]">
                       <Image
@@ -172,7 +172,7 @@ const CreateAccount = () => {
             <form action="#">
               <div className="mb-4 bg-sky-100 relative">
                 <label htmlFor="owner1" className="block text-gray-600">Owner 01</label>
-                {accountAddr[0].holdsAccount < 4 && <div className="absolute right-0 mt-2 mx-2">
+                <div className="absolute right-0 mt-2 mx-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6 text-green-500"
@@ -187,7 +187,7 @@ const CreateAccount = () => {
                       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                </div>}
+                </div>
                 <input
                   type="text"
                   id="owner1"
@@ -195,12 +195,12 @@ const CreateAccount = () => {
                   className="w-full border border-gray-300 rounded-md py-2 px-3 pr-10  focus:outline-none focus:border-blue-500"
                   autoComplete="off"
                   placeholder="0x................................................................"
-                  value={accountAddr[0].add1}
+                  value={accountAddr[0]?.add1}
                   onChange={e => setaccountAddr([{ ...accountAddr[0], add1: e.target.value }, accountAddr[1], accountAddr[2]])} />
               </div>
               <div className="mb-4 bg-sky-100 relative">
                 <label htmlFor="owner2" className="block text-gray-600">Owner 02</label>
-                {accountAddr[1].holdsAccount < 4 && <div className="absolute right-0 mt-2 mx-2">
+                <div className="absolute right-0 mt-2 mx-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6 text-green-500"
@@ -215,7 +215,7 @@ const CreateAccount = () => {
                       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                </div>}
+                </div>
                 <input
                   type="text"
                   id="owner2"
@@ -223,13 +223,13 @@ const CreateAccount = () => {
                   className="w-full border border-gray-300 rounded-md py-2 px-3  pr-10 focus:outline-none focus:border-blue-500"
                   autoComplete="off"
                   placeholder="0x................................................................"
-                  value={accountAddr[1].add2}
+                  value={accountAddr[1]?.add2}
                   onChange={e => setaccountAddr([accountAddr[0], { ...accountAddr[1], add2: e.target.value }, accountAddr[2]])}
                 />
               </div>
               <div className="mb-4 bg-sky-100 relative">
                 <label htmlFor="owner3" className="block text-gray-600">Owner 03</label>
-                {accountAddr[2].holdsAccount < 4 && <div className="absolute right-0 mt-2 mx-2">
+                <div className="absolute right-0 mt-2 mx-2">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-6 w-6 text-green-500"
@@ -244,7 +244,7 @@ const CreateAccount = () => {
                       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                </div>}
+                </div>
                 <input
                   type="text"
                   id="owner3"
@@ -252,7 +252,7 @@ const CreateAccount = () => {
                   className="w-full border border-gray-300 rounded-md py-2 px-3 pr-10 focus:outline-none focus:border-blue-500"
                   autoComplete="off"
                   placeholder="0x................................................................"
-                  value={accountAddr[2].add3}
+                  value={accountAddr[2]?.add3}
                   onChange={(e) =>
                     setaccountAddr([
                       accountAddr[0],
