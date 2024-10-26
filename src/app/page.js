@@ -1,6 +1,7 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
 import { AppContext } from "./store/AppContext";
+import { createAccount, loadAccount, accountHistory } from "./store/actions";
 import { useRouter } from "next/navigation";
 import Image from 'next/image';
 
@@ -62,11 +63,13 @@ const CreateAccount = () => {
       try {
         state.contract.once('AccountCreated', (owners, id, timestamp) => {
           const temp = {
-            owner: [...owners],
+            owners: [...owners],
             id: id,
+            balance: 0,
             timestamp: timestamp,
           };
-          dispatch({ type: "SET_ACTIVE_ACCOUNT", payload: temp });
+          dispatch(createAccount(temp));
+          dispatch(loadAccount(temp));
         });
 
         // Call createAccount
@@ -74,10 +77,14 @@ const CreateAccount = () => {
           gasLimit: 1000000,
         });
         console.log("Transaction result:", result);
+        await result.wait();
+        console.log("await tx.wait(); result:", result);
 
         const receipt = await result.wait();
         if (receipt) {
-          dispatch({ type: "CREATE_ACCOUNT", payload: { /* your payload */ } });
+          console.log("Account successfully created:", receipt);
+          dispatch(accountHistory(['Account Created']));
+
           route.push(`/deposit`);
         }
 
@@ -90,9 +97,29 @@ const CreateAccount = () => {
     }
   };
 
-  const openTheExistedAccount=(i)=>{
-    const details =state.contract.accounts[i];
-    console.log('Detail')
+  const openTheExistedAccount = async (i) => {
+    const details = await state.contract.getAccountDetails(i);
+
+    const ownersArray = Array.from(details[0]);
+    const accountData = {
+      owners: ownersArray,
+      id: i,
+      balance: details[1].toString(),
+    };
+    console.log('Detail', details[0])
+    console.log('Account Details:', accountData);
+    dispatch(loadAccount(accountData));
+    const history = [
+      ...state.accountHistory,
+      'log in to account'
+    ];
+    dispatch(accountHistory(history));
+
+    console.log('Account Details:', accountData);
+    console.log('Loaded Account:', state.activeAccount);
+    route.push(`/deposit`);
+
+
   }
   // const checkOwners = async () => {
   //   const accounts = await state.contract.getAccounts();
@@ -142,7 +169,7 @@ const CreateAccount = () => {
             <h1 className="text-2xl font-semibold mb-4">Your Accounts</h1>
             <div className="flex items-center justify-between px-8 py-5">
               {accountAddr?.map((item, i) => {
-                return <div className="flex items-center mr-5" key={i} onClick={()=>openTheExistedAccount(Number(item))}>
+                return <div className="flex items-center mr-5" key={i} onClick={() => openTheExistedAccount(Number(item))}>
                   <div className="mr-5">
                     <div className="inline-block relative shrink-0 cursor-pointer rounded-[.95rem]">
                       <Image

@@ -8,7 +8,7 @@ const initialState = {
   accounts: [],
   activeAccount: {},
   pendingRequests: [],
-  balance: 0,
+  accountHistory: [],
   provider: null,
   signer: null,
   contract: null,
@@ -44,7 +44,7 @@ const AppProvider = ({ children }) => {
 
   const initContract = async (signer) => {
     try {
-      const contractAddress = '0x16EB2f0Cb3f23Ae18EEB388EfeE1EF8E2e817b0a'; // Your updated contract address
+      const contractAddress = '0xcd7AB8905CEE654b0341E0C8B2527e51556524aC';
       const contractABI = [
         {
           "anonymous": false,
@@ -204,20 +204,6 @@ const AppProvider = ({ children }) => {
           "type": "function"
         },
         {
-          "inputs": [],
-          "name": "demotest",
-          "outputs": [
-            {
-              "internalType": "string",
-              "name": "",
-              "type": "string"
-            }
-          ],
-          "stateMutability": "pure",
-          "type": "function",
-          "constant": true
-        },
-        {
           "inputs": [
             {
               "internalType": "uint256",
@@ -252,6 +238,76 @@ const AppProvider = ({ children }) => {
           "outputs": [],
           "stateMutability": "nonpayable",
           "type": "function"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "accountId",
+              "type": "uint256"
+            }
+          ],
+          "name": "getAccountDetails",
+          "outputs": [
+            {
+              "internalType": "address[]",
+              "name": "",
+              "type": "address[]"
+            },
+            {
+              "internalType": "uint256",
+              "name": "",
+              "type": "uint256"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint256",
+              "name": "_accountId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "_withdrawId",
+              "type": "uint256"
+            }
+          ],
+          "name": "seeWithDrawRequest",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "user",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "amount",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "approvals",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "approved",
+              "type": "bool"
+            },
+            {
+              "internalType": "address[]",
+              "name": "approvingOwners",
+              "type": "address[]"
+            }
+          ],
+          "stateMutability": "view",
+          "type": "function",
+          "constant": true
         },
         {
           "inputs": [

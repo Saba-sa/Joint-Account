@@ -7,20 +7,22 @@ const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const { state, dispatch } = useContext(AppContext);
   const hasFetchedBalance = useRef(false);
+
+
+
   useEffect(() => {
     const getBalance = async () => {
       if (!state.contract) return; // Early return if contract is not initialized
-
+      console.log('state', state)
       try {
-        const savedDataID = JSON.parse(localStorage.getItem('myData'));
-        const accountId = savedDataID ? Number(savedDataID) : Number(state?.activeAccount?.id);
+        const accountId = Number(state?.activeAccount?.id);
         const result = await state.contract.getBalance(accountId, { gasLimit: 1000000 });
         console.log('Balance:', result.toString());
 
         if (!hasFetchedBalance.current) {
           dispatch({
             type: 'SET_ACTIVE_ACCOUNT',
-            payload: { ...state.activeAccount, accountBalance: result },
+            payload: { ...state.activeAccount, balance: result },
           });
           hasFetchedBalance.current = true; // Mark as fetched
         }
@@ -35,7 +37,7 @@ const Sidebar = () => {
   }, [state.activeAccount?.id]); // Only trigger when the ID changes
 
 
-
+  console.log('account balace', state?.activeAccount?.balance)
   return (
     <>
       <div className="flex flex-col w-full bg-white mx-auto">
@@ -62,14 +64,14 @@ const Sidebar = () => {
                   Account Id: {Number(state?.activeAccount?.id)}
                 </a>
                 <span className="text-secondary-dark dark:text-stone-500 font-medium block text-[0.85rem]">
-                  Account Balance: {state.balance}
+                  Account Balance: {Number(state?.activeAccount?.balance)}
                 </span>
               </div>
             </div>
           </div>
 
           <div className="hidden border-b border-dashed lg:block dark:border-neutral-700/70 border-neutral-200"></div>
-          {state.activeAccount?.owner?.map((account, index) => {
+          {state.activeAccount?.owners?.map((account, index) => {
             return <Siderbarowner key={index} accountAddr={account} />
           })
           }

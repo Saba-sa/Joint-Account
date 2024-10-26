@@ -1,6 +1,7 @@
 export const CREATE_ACCOUNT = 'CREATE_ACCOUNT';
+export const LOAD_ACCOUNT = 'LOAD_ACCOUNT';
 export const SET_ACTIVE_ACCOUNT = 'SET_ACTIVE_ACCOUNT';
-export const ADD_DEPOSIT = 'ADD_DEPOSIT';
+export const ACCOUNT_HISTORY = 'ACCOUNT_HISTORY';
 export const ADD_WITHDRAW_REQUEST = 'ADD_WITHDRAW_REQUEST';
 export const APPROVE_WITHDRAW = 'APPROVE_WITHDRAW';
 export const WITHDRAW = 'WITHDRAW';
@@ -13,14 +14,18 @@ export const createAccount = (account) => ({
   type: CREATE_ACCOUNT,
   payload: account,
 });
+export const loadAccount = (account) => ({
+  type: LOAD_ACCOUNT,
+  payload: account,
+});
 
 export const setActiveAccount = (activeAccount) => ({
   type: SET_ACTIVE_ACCOUNT,
   payload: activeAccount,
 });
 
-export const addDeposit = (amount) => ({
-  type: ADD_DEPOSIT,
+export const accountHistory = (amount) => ({
+  type: ACCOUNT_HISTORY,
   payload: amount,
 });
 
