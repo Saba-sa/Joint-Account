@@ -2,7 +2,7 @@
 import { useContext, useState } from "react";
 import { AppContext } from "../store/AppContext";
 import { ethers, parseUnits } from "ethers";
-import { loadAccount } from "../store/actions";
+import { accountHistory, loadAccount } from "../store/actions";
 
 const Deposit = () => {
   const { state, dispatch } = useContext(AppContext);
@@ -21,16 +21,21 @@ const Deposit = () => {
         const t = await result.wait();
         if (t) {
           const balanceAmt = await state.contract.getBalance(state.activeAccount.id)
-          setDepositDetail({
-            address: '0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-            value: "value must be in wei"
-          });
           const updatedActiveAccount = {
             ...state.activeAccount,
             balance: balanceAmt
           };
           dispatch(loadAccount(updatedActiveAccount));
-          console.log(state.activeAccount)
+          const history = [
+            ...state.accountHistory,
+            `${depositDetail.address.slice(0, 5)}...${depositDetail.address.slice(-3)} deposited ${depositDetail.value} wei`
+          ];
+          dispatch(accountHistory(history));
+          setDepositDetail({
+            address: '0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+            value: "value must be in wei"
+          });
+
         }
       } catch (error) {
         console.error("Error in depositFunds:", error);

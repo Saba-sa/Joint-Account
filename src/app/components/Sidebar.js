@@ -2,12 +2,14 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import Siderbarowner from "./Siderbarowner";
 import { AppContext } from "../store/AppContext";
+import { useRouter } from "next/navigation";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(false);
   const { state, dispatch } = useContext(AppContext);
   const hasFetchedBalance = useRef(false);
 
+  const route = useRouter();
 
 
   useEffect(() => {
@@ -37,7 +39,6 @@ const Sidebar = () => {
   }, [state.activeAccount?.id]); // Only trigger when the ID changes
 
 
-  console.log('account balace', state?.activeAccount?.balance)
   return (
     <>
       <div className="flex flex-col w-full bg-white mx-auto">
@@ -78,17 +79,22 @@ const Sidebar = () => {
 
 
           <div className="hidden border-b border-dashed lg:block dark:border-neutral-700/70 border-neutral-200">
-            <p>Account History</p>
-            <p>Account History</p>
-            <p>Account History</p>
-            <p>Account History</p>
+            <ol className='p-4'>
+              {
+                state?.accountHistory?.map((task, i) => {
+                  return <li key={i} className='mb-2'>{task}</li>
+                })
+              }
+            </ol>
           </div>
         </aside>
 
         <nav className="flex  h-auto bg-white shadow-lg rounded-lg justify-end md:h-16">
           <div className="hidden w-1/5 items-center justify-evenly font-semibold md:flex">
             <button>Deposit</button>
-            <button>Withdraw</button>
+            <button onClick={() => {
+              route.push('/requestwithdraw')
+            }}>Withdraw</button>
           </div>
         </nav>
       </div>

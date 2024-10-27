@@ -121,34 +121,7 @@ const CreateAccount = () => {
 
 
   }
-  // const checkOwners = async () => {
-  //   const accounts = await state.contract.getAccounts();
-
-  //   accounts.forEach((account) => {
-  //     account.owners.forEach((owner) => {
-  //       if (owner === accountAddr[0].add1) {
-  //         setaccountAddr((prev) => [
-  //           { ...prev[0], holdsAccount: prev[0].holdsAccount + 1 },
-  //           prev[1],
-  //           prev[2],
-  //         ]);
-  //       } else if (owner === accountAddr[1].add2) {
-  //         setaccountAddr((prev) => [
-  //           prev[0],
-  //           { ...prev[1], holdsAccount: prev[1].holdsAccount + 1 },
-  //           prev[2],
-  //         ]);
-  //       } else if (owner === accountAddr[2].add3) {
-  //         setaccountAddr((prev) => [
-  //           prev[0],
-  //           prev[1],
-  //           { ...prev[2], holdsAccount: prev[2].holdsAccount + 1 },
-  //         ]);
-  //       }
-  //     });
-  //   });
-  // };
-
+ 
   return (
     <>
       <div className="bg-sky-100 flex justify-center items-center h-screen">

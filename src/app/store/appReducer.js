@@ -38,7 +38,7 @@ export default function appReducer(state, action) {
     case ADD_WITHDRAW_REQUEST:
       return {
         ...state,
-        pendingRequests: [...state.pendingRequests, action.payload],
+        pendingRequests: [...state.pendingRequests, action.payload]
       };
     case APPROVE_WITHDRAW:
       return {

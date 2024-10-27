@@ -29,11 +29,11 @@ export const accountHistory = (amount) => ({
   payload: amount,
 });
 
+ 
 export const addWithdrawRequest = (request) => ({
-  type: ADD_WITHDRAW_REQUEST,
+  type: 'ADD_WITHDRAW_REQUEST',
   payload: request,
 });
-
 export const approveWithdraw = (requestId) => ({
   type: APPROVE_WITHDRAW,
   payload: requestId,

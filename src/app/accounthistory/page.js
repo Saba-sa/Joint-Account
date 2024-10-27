@@ -1,14 +1,14 @@
 import Timeline from "../components/Timeline"
-const Accountdepositorhistory=()=>{
-return (
+const Accountdepositorhistory = () => {
+  return (
     <section className="relative min-h-screen flex flex-col justify-center bg-slate-50 overflow-hidden antialiased">
       <div className="w-full max-w-6xl mx-auto px-4 md:px-6 py-24">
         <div className="flex flex-col justify-center divide-y divide-slate-200 [&>*]:py-16">
           <div className="w-full max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold">History</h1>
+            <h1 className="text-2xl font-bold">History</h1>
             {/* Vertical Timeline */}
             <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:ml-[8.75rem] md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-300 before:to-transparent">
-              
+
               {/* Item #1 */}
               <div className="relative">
                 <div className="md:flex items-center md:space-x-4 mb-3">
@@ -29,14 +29,14 @@ return (
                 </div>
                 {/* Card */}
                 <div className="bg-white p-4 rounded border border-slate-200 text-slate-500 shadow ml-14 md:ml-44">
-                account balance 0   </div>
+                  account balance 0   </div>
               </div>
-              
-              {/* Item #2 */}
-              <Timeline/>
-              <Timeline/>
 
-              <Timeline/>
+              {/* Item #2 */}
+              <Timeline />
+              <Timeline />
+
+              <Timeline />
 
 
               {/* Additional Timeline Items... */}
