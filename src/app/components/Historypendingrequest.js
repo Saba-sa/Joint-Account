@@ -27,7 +27,6 @@ const Historypendingrequest = () => {
             status: details[3],
             approvingOwners: [...details[4]],
           }
-          console.log('details', t);
           requestDetails.push(t);
         } catch (error) {
           console.error("Error fetching withdrawal request details:", error);
@@ -36,7 +35,9 @@ const Historypendingrequest = () => {
 
       setRequest(requestDetails);
       const t = requestDetails?.filter((i) => i.status === true);
+      const s = requestDetails?.filter((i) => Number(i.withdrawId) !== Number(t.withdrawId));
       setApprovedRequets(t)
+      setRequest(s)
     };
 
     if (state.pendingRequests && state.pendingRequests.length > 0) {

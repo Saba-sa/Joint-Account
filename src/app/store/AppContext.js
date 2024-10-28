@@ -8,7 +8,6 @@ const initialState = {
   accounts: [],
   activeAccount: {},
   pendingRequests: [],
-
   accountHistory: [],
   provider: null,
   signer: null,
@@ -45,7 +44,7 @@ const AppProvider = ({ children }) => {
 
   const initContract = async (signer) => {
     try {
-      const contractAddress = '0xfb9cFDb0f89e07a082D5d0BCad10C149D38Cabce';
+      const contractAddress = '0x913FB482A0B16EA46A623c41bB69Aad88e825621';
       const contractABI = [
         {
           "anonymous": false,

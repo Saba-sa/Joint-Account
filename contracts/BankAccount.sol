@@ -81,9 +81,11 @@ contract BankAccount {
             "this request does not exist"
         );
         require(
-            accounts[accountId].withdrawRequests[withdrawId].ownersApproved[
-                msg.sender
-            ],
+            !(
+                accounts[accountId].withdrawRequests[withdrawId].ownersApproved[
+                    msg.sender
+                ]
+            ),
             "you have already approved"
         );
         _;
@@ -98,11 +100,17 @@ contract BankAccount {
             accounts[accountId].withdrawRequests[withdrawId].approved,
             "this request is not approved"
         );
+        require(
+            accounts[accountId].withdrawRequests[withdrawId].approvals ==
+                accounts[accountId].owners.length - 1,
+            "this request doesn't have enought approvals"
+        );
         _;
     }
 
     function deposit(uint accountId) external payable accountOwner(accountId) {
         accounts[accountId].balance += msg.value;
+        emit Deposit(msg.sender, accountId, msg.value, block.timestamp);
     }
 
     function createAccount(address[] calldata otherOwners) external {
@@ -147,7 +155,7 @@ contract BankAccount {
     function approveWithdrawl(
         uint accountId,
         uint withdrawId
-    ) external accountOwner(accountId) {
+    ) external accountOwner(accountId) canApprove(accountId, withdrawId) {
         WithdrawRequest storage request = accounts[accountId].withdrawRequests[
             withdrawId
         ];
@@ -200,7 +208,6 @@ contract BankAccount {
         ];
         Account storage account = accounts[_accountId];
 
-        // Count the number of approvals first to create an array of correct size
         uint approvingOwnersCount;
         for (uint i = 0; i < account.owners.length; i++) {
             if (request.ownersApproved[account.owners[i]]) {
@@ -208,13 +215,11 @@ contract BankAccount {
             }
         }
 
-        // Create an array of the correct size to store approving owners' addresses
         address[] memory ownersWhoApproved = new address[](
             approvingOwnersCount
         );
         uint currentIndex;
 
-        // Fill the array with addresses of owners who approved
         for (uint i = 0; i < account.owners.length; i++) {
             if (request.ownersApproved[account.owners[i]]) {
                 ownersWhoApproved[currentIndex] = account.owners[i];

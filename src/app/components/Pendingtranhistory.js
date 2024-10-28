@@ -1,8 +1,17 @@
+import { useRouter } from 'next/navigation';
+
+
 const Pendingtranhistory = ({ request }) => {
-  // console.log("request", request);
+  const router = useRouter();
+  const goToDetailPage = (withdrawId) => {
+    router.push(`/requestwithdraw/requestwithDrawdetail/${withdrawId}`);
+  };
+
+  console.log("Withdraw ID:", request.withdrawId); // Check if withdrawId is valid
   return (
     <>
-      <li className="p-3 flex justify-between items-center user-card">
+
+      <li className="p-3 flex justify-between items-center user-card" onClick={() => goToDetailPage(request.withdrawId)}>
         <div className="flex items-center">
           <img
             className="w-10 h-10 rounded-full"
