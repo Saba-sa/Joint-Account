@@ -47,28 +47,27 @@ const ApprovedWithdraw = () => {
       const withdrawIdNumber = Number(withdrawid);
       const activeAccountId = Number(state.activeAccount.id);
 
-      console.log('insde set approval', withdrawIdNumber, activeAccountId)
+
       if (isNaN(withdrawIdNumber) || isNaN(activeAccountId)) {
         throw new Error('Invalid parameters');
       }
 
-      const signer = new ethers.Wallet("0x18849b5ebed672d5af3eb2b457323a7ba877b1f11d5a21bae201a15e8ba6ba45", state.provider);
-      const contractWithSigner = state.contract.connect(signer);
-      const requestDetails = await contractWithSigner.seeWithDrawRequest(activeAccountId, withdrawIdNumber);
+
+      const requestDetails = await state.contract.seeWithDrawRequest(activeAccountId, withdrawIdNumber);
 
       console.log('Request Details:', requestDetails);
       if (!requestDetails.approved) {
         throw new Error('Withdrawal request has not been approved');
       }
 
-      const accountDetails = await contractWithSigner.getAccountDetails(activeAccountId);
+      const accountDetails = await state.contract.getAccountDetails(activeAccountId);
       console.log('Account Balance:', accountDetails[1]);
       if (accountDetails[1] < requestDetails.amount) {
         throw new Error('Insufficient balance to withdraw');
       }
 
       // Proceed with withdrawal
-      const temp = await contractWithSigner.withdraw(activeAccountId, withdrawIdNumber);
+      const temp = await state.contract.withdraw(activeAccountId, withdrawIdNumber);
       await temp.wait();
 
       if (temp) {
@@ -147,7 +146,7 @@ const ApprovedWithdraw = () => {
               ))}
             </div>
             <div className="p-6 pt-0">
-              {alreadyWithdrawn ? (
+              {alreadyWithdrawn || requestDetails.approvingOwners.length>=3 ? (
                 <button className="align-middle select-none font-sans font-bold text-center uppercase transition-all disabled:opacity-50 disabled:shadow-none disabled:pointer-events-none text-xs py-3 px-6 rounded-lg shadow-gray-900/10 hover:shadow-gray-900/20 focus:opacity-[0.85] active:opacity-[0.85] active:shadow-none block w-full bg-blue-gray-900/10 text-blue-gray-900 shadow-none hover:scale-105 hover:shadow-none focus:scale-105 focus:shadow-none active:scale-100" type="button">
                   Already Withdrawn
                 </button>

@@ -22,7 +22,7 @@ const Pendingtranhistory = ({ request, approved }) => {
             src="https://unsplash.com/photos/oh0DITWoHi4/download?force=true&w=640"
             alt="Christy"
           />
-          <span className="ml-3 font-medium">Christy</span>
+          <span className="ml-3 font-medium">WIthdraw ID{Number(request.withdrawId)+1}</span>
         </div>
         <div>
           <button className="text-gray-500 hover:text-gray-700">

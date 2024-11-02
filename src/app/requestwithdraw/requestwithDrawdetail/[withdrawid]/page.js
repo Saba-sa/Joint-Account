@@ -18,11 +18,11 @@ const RequestDetail = () => {
   const { state } = useContext(AppContext);
 
 
-  const fetchDetails = async (con) => {
-    console.log('see fetchDetails', con)
-    const temp = await con.seeWithDrawRequest(Number(state.activeAccount.id), Number(withdrawid));
-    // const temp = await state.contract.seeWithDrawRequest(Number(state.activeAccount.id), Number(withdrawid));
-    console.log('see with draw detail', seeWithDrawRequest)
+  const fetchDetails = async () => {
+
+    const temp = await state?.contract?.seeWithDrawRequest(Number(state.activeAccount.id), Number(withdrawid));
+    console.log('see with draw detail', temp)
+    console.log('see with draw detail', temp[0])
     setRequestDetails({
       withdrawRequesterAddr: temp[0],
       amount: Number(temp[1]),
@@ -51,23 +51,12 @@ const RequestDetail = () => {
         throw new Error('Invalid parameters');
       }
 
-      const signer = new ethers.Wallet("0x26d32237307381f12c9d4d8dacc9958b9e56954070b5681a3688945b8806b7c3", state.provider);
 
-      // Reconnect the contract instance with the new signer
-      console.log('signer', signer)
-      const contractWithSigner = state.contract.connect(signer);
-      console.log('sdsdsdfs', contractWithSigner)
-
-
-
-      const temp = await contractWithSigner.approveWithdrawl(activeAccountId, withdrawIdNumber, {
-        gasLimit: 100000 // Adjust as necessary
-      });
-      // const temp = await state.contract.approveWithdrawl(activeAccountId, withdrawIdNumber);
+      const temp = await state?.contract?.approveWithdrawl(activeAccountId, withdrawIdNumber);
       await temp.wait();
       console.log('temp', temp)
       if (temp) {
-        fetchDetails(contractWithSigner);
+        fetchDetails();
         console.log('in fetching details')
         const history = [
           ...state.accountHistory,
@@ -77,17 +66,17 @@ const RequestDetail = () => {
         console.log('in history added')
       }
     } catch (error) {
-      let revertMessage = "Transaction failed without a clear revert reason.";
+      // let revertMessage = "Transaction failed without a clear revert reason.";
 
-      if (error.data?.reason) {
-        revertMessage = error.data.reason; // Get direct reason if available
-      } else if (error.data?.message) {
-        revertMessage = error.data.message;
-      } else if (error.message && error.message.includes("revert")) {
-        revertMessage = error.message.split("revert")[1]?.trim();
-      }
+      // if (error.data?.reason) {
+      //   revertMessage = error.data.reason;
+      // } else if (error.data?.message) {
+      //   revertMessage = error.data.message;
+      // } else if (error.message && error.message.includes("revert")) {
+      //   revertMessage = error.message.split("revert")[1]?.trim();
+      // }
 
-      console.error("Revert message:", revertMessage);
+      console.error("Revert message:", error);
     }
   };
 

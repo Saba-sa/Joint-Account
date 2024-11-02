@@ -7,24 +7,16 @@ import { accountHistory, loadAccount } from "../store/actions";
 const Deposit = () => {
   const { state, dispatch } = useContext(AppContext);
   const [depositDetail, setDepositDetail] = useState({
-    address: '0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-    value: "value must be in wei"
+    address: state?.account || '0x0000000000000000000000000000000000000000',
+        value: 0
   });
 
-
+  console.log(state)
   const depositFunds = async () => {
     if (state.contract) {
       try {
-        const signer = new ethers.Wallet(depositDetail.address, state.provider);
 
-        // Reconnect the contract instance with the new signer
-        const contractWithSigner = state.contract.connect(signer);
-
-        console.log('Attempting deposit with address:', await signer.getAddress());
-
-
-        const result = await contractWithSigner.deposit(state.activeAccount.id, {
-        // const result = await state.contract.deposit(state.activeAccount.id, {
+        const result = await state.contract.deposit(state.activeAccount.id, {
           value: parseUnits(depositDetail.value, "wei"),
         });
         console.log('Deposited result', result);
@@ -32,8 +24,7 @@ const Deposit = () => {
         console.log(t, "FInal Result")
 
         if (t) {
-          const balanceAmt = await contractWithSigner.getBalance(state.activeAccount.id);
-          // const balanceAmt = await state.contract.getBalance(state.activeAccount.id);
+          const balanceAmt = await state.contract.getBalance(state.activeAccount.id);
           const updatedActiveAccount = {
             ...state.activeAccount,
             balance: balanceAmt,
@@ -45,7 +36,7 @@ const Deposit = () => {
           ];
           dispatch(accountHistory(history));
           setDepositDetail({
-            address: '',
+            ...depositDetail,
             value: '',
           });
         }
@@ -87,11 +78,8 @@ const Deposit = () => {
                 id="owner2"
                 name="owner2"
                 className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
-                autoComplete="off"
-                placeholder="0x................................................................"
                 value={depositDetail.address}
-                onChange={(e) => setDepositDetail({ ...depositDetail, address: e.target.value })}
-              />
+                readOnly />
             </div>
 
             {/* Deposit Value */}
@@ -119,7 +107,6 @@ const Deposit = () => {
                 name="owner3"
                 className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
                 autoComplete="off"
-                placeholder="0x................................................................"
                 value={depositDetail.value}
                 onChange={(e) => setDepositDetail({ ...depositDetail, value: e.target.value })}
               />

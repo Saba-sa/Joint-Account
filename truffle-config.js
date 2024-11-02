@@ -3,11 +3,13 @@ module.exports = {
     contracts_directory: './contracts/',
     contracts_build_directory: './build/contracts/',
     networks: {
-        development: {
-            host: "127.0.0.1",   // Localhost
-            port: 7545,          // Port Ganache is listening on
-            network_id: "*",     // Use '*' to match any network id
-        },
+        moonbaseAlpha: {
+            host: "127.0.0.1",
+            port: 7545,
+            network_id: 1287,
+            gas: 12000000,
+            gasPrice: 1000000000,
+        }
     },
     compilers: {
         solc: {

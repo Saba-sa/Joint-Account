@@ -17,7 +17,7 @@ const Historypendingrequest = () => {
 
       for (let i = 0; i < temp.length; i++) {
         try {
-          const details = await state.contract.seeWithDrawRequest(temp[i].accountId, temp[i].withdrawId);
+          const details = await state?.contract?.seeWithDrawRequest(temp[i].accountId, temp[i].withdrawId);
           const t = {
             accountId: temp[i].accountId,
             withdrawId: temp[i].withdrawId,
@@ -32,12 +32,15 @@ const Historypendingrequest = () => {
           console.error("Error fetching withdrawal request details:", error);
         }
       }
-
-      setRequest(requestDetails);
-      const t = requestDetails?.filter((i) => i.status === true);
+      console.log('requests', requestDetails)
+      const t = requestDetails?.filter((detail) => detail.approvingOwners.length >= 3);
       const s = requestDetails?.filter((i) => Number(i.withdrawId) !== Number(t.withdrawId));
+      console.log('s', s)
+      console.log('t', t)
+      const pending = s.filter((detail) => detail.approvingOwners.length < 3)
+      console.log('pending', pending)
       setApprovedRequets(t)
-      setRequest(s)
+      setRequest(pending)
     };
 
     if (state.pendingRequests && state.pendingRequests.length > 0) {
@@ -49,7 +52,7 @@ const Historypendingrequest = () => {
       <div className="max-w-sm mx-auto my-10">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden p-8">
           <Requests Heading='Pending unapproved transactions' Requests={requests} />
-          {approvedRequets.length > 0 && <Requests Heading='Approved transactions' Requests={approvedRequets} approved={true}/>}
+          {approvedRequets.length > 0 && <Requests Heading='Approved transactions' Requests={approvedRequets} approved={true} />}
 
         </div>
       </div>
