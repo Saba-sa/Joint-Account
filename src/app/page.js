@@ -185,7 +185,7 @@ const CreateAccount = () => {
                   className="w-full border border-gray-300 rounded-md py-2 px-3 pr-10  focus:outline-none focus:border-blue-500"
                   autoComplete="off"
                   placeholder="0x................................................................"
-                  value={accountAddr[0]?.add1}
+                  value={accountAddr[0]?.add1 || ''}
                   onChange={e => setaccountAddr([{ ...accountAddr[0], add1: e.target.value }, accountAddr[1], accountAddr[2]])} />
               </div>
               <div className="mb-4 bg-sky-100 relative">
@@ -213,7 +213,7 @@ const CreateAccount = () => {
                   className="w-full border border-gray-300 rounded-md py-2 px-3  pr-10 focus:outline-none focus:border-blue-500"
                   autoComplete="off"
                   placeholder="0x................................................................"
-                  value={accountAddr[1]?.add2}
+                  value={accountAddr[1]?.add2 || ''}
                   onChange={e => setaccountAddr([accountAddr[0], { ...accountAddr[1], add2: e.target.value }, accountAddr[2]])}
                 />
               </div>
@@ -242,7 +242,7 @@ const CreateAccount = () => {
                   className="w-full border border-gray-300 rounded-md py-2 px-3 pr-10 focus:outline-none focus:border-blue-500"
                   autoComplete="off"
                   placeholder="0x................................................................"
-                  value={accountAddr[2]?.add3}
+                  value={accountAddr[2]?.add3 || ''}
                   onChange={(e) =>
                     setaccountAddr([
                       accountAddr[0],

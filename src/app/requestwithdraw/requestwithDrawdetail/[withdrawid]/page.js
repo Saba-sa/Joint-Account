@@ -18,9 +18,11 @@ const RequestDetail = () => {
   const { state } = useContext(AppContext);
 
 
-  const fetchDetails = async () => {
-    const temp = await state.contract.seeWithDrawRequest(Number(state.activeAccount.id), Number(withdrawid));
-
+  const fetchDetails = async (con) => {
+    console.log('see fetchDetails', con)
+    const temp = await con.seeWithDrawRequest(Number(state.activeAccount.id), Number(withdrawid));
+    // const temp = await state.contract.seeWithDrawRequest(Number(state.activeAccount.id), Number(withdrawid));
+    console.log('see with draw detail', seeWithDrawRequest)
     setRequestDetails({
       withdrawRequesterAddr: temp[0],
       amount: Number(temp[1]),
@@ -28,8 +30,10 @@ const RequestDetail = () => {
       approved: Boolean(temp[3]),
       approvingOwners: [...temp[4]],
     })
+    console.log('set detail')
     if (Boolean(temp[3])) {
       setIsApproved(true)
+      console.log('if approevv')
     }
 
   }
@@ -47,7 +51,7 @@ const RequestDetail = () => {
         throw new Error('Invalid parameters');
       }
 
-      const signer = new ethers.Wallet("0x9a1be89fc702062d512c58ef7244b1a03af0c10eec2102e009b1c26ca961511e", state.provider);
+      const signer = new ethers.Wallet("0x26d32237307381f12c9d4d8dacc9958b9e56954070b5681a3688945b8806b7c3", state.provider);
 
       // Reconnect the contract instance with the new signer
       console.log('signer', signer)
@@ -63,12 +67,14 @@ const RequestDetail = () => {
       await temp.wait();
       console.log('temp', temp)
       if (temp) {
-        fetchDetails();
+        fetchDetails(contractWithSigner);
+        console.log('in fetching details')
         const history = [
           ...state.accountHistory,
           `${signer.address.slice(0, 5)}...${signer.address.slice(-3)} approved the withdraw request ${withdrawIdNumber}`,
         ];
         dispatch(accountHistory(history));
+        console.log('in history added')
       }
     } catch (error) {
       let revertMessage = "Transaction failed without a clear revert reason.";
@@ -125,8 +131,8 @@ const RequestDetail = () => {
               {requestDetails.approvingOwners.length > 0 && <p className="block font-sans text-base antialiased font-medium leading-relaxed text-blue-gray-900">
                 Account's that have approved the request are:                </p>}
 
-              {requestDetails?.approvingOwners?.map((item) => {
-                return <p className="block font-sans text-sm antialiased font-normal leading-normal text-gray-700 opacity-75">
+              {requestDetails?.approvingOwners?.map((item, i) => {
+                return <p className="block font-sans text-sm antialiased font-normal leading-normal text-gray-700 opacity-75" key={i}>
                   {item}
                 </p>
 

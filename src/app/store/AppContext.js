@@ -26,7 +26,7 @@ const AppProvider = ({ children }) => {
         if (typeof window !== 'undefined' && window.ethereum) {
           const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
           // const signer = await provider.getSigner(); 
-          const signer = new ethers.Wallet("0x0c5f49f5daed0fb22508dd54c904c65dfe7aa88013580e10bd06dcae7ff01d07", provider)
+          const signer = new ethers.Wallet("0x18849b5ebed672d5af3eb2b457323a7ba877b1f11d5a21bae201a15e8ba6ba45", provider)
           console.log('signer', signer)
           const account = await signer.getAddress();
           dispatch({ type: 'SET_PROVIDER', payload: provider });
@@ -47,7 +47,7 @@ const AppProvider = ({ children }) => {
 
   const initContract = async (signer) => {
     try {
-      const contractAddress = '0x3bfc60f9CEB3dC9bCD1FF7c132f758488B091B63';
+      const contractAddress = '0xFE555E00966bD26E6BA65C4C206aDd0454123ccd';
       const contractABI = Abi;
       if (signer && contractAddress && contractABI) {
         const contract = new ethers.Contract(contractAddress, contractABI, signer);

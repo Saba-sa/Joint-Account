@@ -5,6 +5,8 @@ import { ethers } from 'ethers';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
+import { parseUnits } from "ethers";
+
 
 const ApprovedWithdraw = () => {
   console.log('heeeloooo');
@@ -17,7 +19,7 @@ const ApprovedWithdraw = () => {
     approvingOwners: [],
   });
   const [alreadyWithdrawn, setAlreadyWithdrawn] = useState(false);
-  const { state } = useContext(AppContext);
+  const { state, dispatch } = useContext(AppContext);
 
   const fetchDetails = async () => {
     const temp = await state.contract.seeWithDrawRequest(Number(state.activeAccount.id), Number(withdrawid));
@@ -36,28 +38,51 @@ const ApprovedWithdraw = () => {
   }, [state.pendingRequests]);
 
   const setApproval = async () => {
+    console.log('insde set approval', state.activeAccount)
     try {
+
+      state.contract.once('Withdraw', (withdrawId, blockTimestamp) => {
+        console.log('withdraw occur', withdrawId, blockTimestamp);
+      });
       const withdrawIdNumber = Number(withdrawid);
       const activeAccountId = Number(state.activeAccount.id);
 
+      console.log('insde set approval', withdrawIdNumber, activeAccountId)
       if (isNaN(withdrawIdNumber) || isNaN(activeAccountId)) {
         throw new Error('Invalid parameters');
       }
 
-      const signer = new ethers.Wallet("0x488d2a446128742d43709df261d71e4f4bd9fee5175b8f91c86fe0e9595e4317", state.provider);
+      const signer = new ethers.Wallet("0x18849b5ebed672d5af3eb2b457323a7ba877b1f11d5a21bae201a15e8ba6ba45", state.provider);
       const contractWithSigner = state.contract.connect(signer);
+      const requestDetails = await contractWithSigner.seeWithDrawRequest(activeAccountId, withdrawIdNumber);
 
-      const temp = await contractWithSigner.withdraw(activeAccountId, withdrawIdNumber, {
-        value: ethers.utils.parseEther(requestDetails.amount.toString()),
-        gasLimit: 100000,
-      });
+      console.log('Request Details:', requestDetails);
+      if (!requestDetails.approved) {
+        throw new Error('Withdrawal request has not been approved');
+      }
+
+      const accountDetails = await contractWithSigner.getAccountDetails(activeAccountId);
+      console.log('Account Balance:', accountDetails[1]);
+      if (accountDetails[1] < requestDetails.amount) {
+        throw new Error('Insufficient balance to withdraw');
+      }
+
+      // Proceed with withdrawal
+      const temp = await contractWithSigner.withdraw(activeAccountId, withdrawIdNumber);
       await temp.wait();
 
-      setAlreadyWithdrawn(true); // Update state after withdrawal
+      if (temp) {
+        const result = await state.contract.getBalance(activeAccountId, { gasLimit: 1000000 });
 
-      contractWithSigner.on("Withdraw", (withdrawId, blockTimestamp) => {
-        console.log('hey', withdrawId, blockTimestamp);
-      });
+        dispatch({
+          type: 'SET_ACTIVE_ACCOUNT',
+          payload: { ...state.activeAccount, balance: result },
+        });
+        setAlreadyWithdrawn(true);
+      }
+
+      console.log('temp withdraw', temp)
+
 
       fetchDetails(); // Fetch new details after withdrawal
 
@@ -67,15 +92,16 @@ const ApprovedWithdraw = () => {
       ];
       dispatch(accountHistory(history));
     } catch (error) {
-      let revertMessage = "Transaction failed without a clear revert reason.";
+      // let revertMessage = "Transaction failed without a clear revert reason.";
 
-      if (error.data && error.data.reason) {
-        revertMessage = error.data.reason;
-      } else if (error.message && error.message.includes("revert")) {
-        revertMessage = error.message.split("revert")[1]?.trim() || revertMessage;
-      }
+      // if (error.data && error.data.reason) {
+      //   revertMessage = error.data.reason;
+      // } else if (error.message && error.message.includes("revert")) {
+      //   revertMessage = error.message.split("revert")[1]?.trim() || revertMessage;
+      // }
 
-      console.error("Revert message:", revertMessage);
+      // console.error("Revert message:", revertMessage);
+      console.error("Revert message:", error);
       // Optionally set an error state to display in the UI
     }
   };
