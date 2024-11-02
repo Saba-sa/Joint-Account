@@ -33,7 +33,6 @@ const CreateAccount = () => {
         try {
           const accounts = await state.contract.getAccounts();
           setaccountAddr([...accounts]);
-          console.log("accounts accounts:", [...accounts]);
 
         }
         catch (e) {
@@ -47,7 +46,6 @@ const CreateAccount = () => {
 
   const AddOwners = async (e) => {
     e.preventDefault();
-
     const addresses = [
       accountAddr[0]?.add1,
       accountAddr[1]?.add2,
@@ -76,15 +74,11 @@ const CreateAccount = () => {
         const result = await state.contract.createAccount(addresses, {
           gasLimit: 1000000,
         });
-        console.log("Transaction result:", result);
         await result.wait();
-        console.log("await tx.wait(); result:", result);
 
         const receipt = await result.wait();
         if (receipt) {
-          console.log("Account successfully created:", receipt);
           dispatch(accountHistory(['Account Created']));
-
           route.push(`/deposit`);
         }
 
@@ -106,8 +100,7 @@ const CreateAccount = () => {
       id: i,
       balance: details[1].toString(),
     };
-    console.log('Detail', details[0])
-    console.log('Account Details:', accountData);
+
     dispatch(loadAccount(accountData));
     const history = [
       ...state.accountHistory,
@@ -115,13 +108,10 @@ const CreateAccount = () => {
     ];
     dispatch(accountHistory(history));
 
-    console.log('Account Details:', accountData);
-    console.log('Loaded Account:', state.activeAccount);
+
     route.push(`/deposit`);
-
-
   }
- 
+
   return (
     <>
       <div className="bg-sky-100 flex justify-center items-center h-screen">

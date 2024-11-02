@@ -81,11 +81,9 @@ contract BankAccount {
             "this request does not exist"
         );
         require(
-            !(
-                accounts[accountId].withdrawRequests[withdrawId].ownersApproved[
-                    msg.sender
-                ]
-            ),
+            !accounts[accountId].withdrawRequests[withdrawId].ownersApproved[
+                msg.sender
+            ],
             "you have already approved"
         );
         _;

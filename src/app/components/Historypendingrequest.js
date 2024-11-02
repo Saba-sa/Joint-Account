@@ -49,7 +49,7 @@ const Historypendingrequest = () => {
       <div className="max-w-sm mx-auto my-10">
         <div className="bg-white shadow-lg rounded-lg overflow-hidden p-8">
           <Requests Heading='Pending unapproved transactions' Requests={requests} />
-          {approvedRequets.length > 0 && <Requests Heading='Approved transactions' Requests={approvedRequets} />}
+          {approvedRequets.length > 0 && <Requests Heading='Approved transactions' Requests={approvedRequets} approved={true}/>}
 
         </div>
       </div>

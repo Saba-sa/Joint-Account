@@ -11,11 +11,12 @@ module.exports = {
     },
     compilers: {
         solc: {
-            version: "0.8.0", // Use a specific version of Solidity
-      
+            version: "0.8.4", // Use a specific version of Solidity
+
             optimizer: {
                 enabled: true,
                 runs: 200
             }
-        }}
+        }
+    }
 };

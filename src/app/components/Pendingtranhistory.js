@@ -1,10 +1,14 @@
 import { useRouter } from 'next/navigation';
 
 
-const Pendingtranhistory = ({ request }) => {
+const Pendingtranhistory = ({ request, approved }) => {
   const router = useRouter();
-  const goToDetailPage = (withdrawId) => {
-    router.push(`/requestwithdraw/requestwithDrawdetail/${withdrawId}`);
+  const goToDetailPage = (id) => {
+    if (approved) {
+      router.push(`/requestwithdraw/approvedwithdraw/${id}`);
+    } else {
+      router.push(`/requestwithdraw/requestwithDrawdetail/${id}`);
+    }
   };
 
   console.log("Withdraw ID:", request.withdrawId); // Check if withdrawId is valid

@@ -1,6 +1,6 @@
 import Pendingtranhistory from "./Pendingtranhistory"
 
-const Requests = ({ Heading = '', Requests = [] }) => {
+const Requests = ({ Heading = '', Requests = [], approved = false }) => {
 
   return (
     <>
@@ -9,7 +9,7 @@ const Requests = ({ Heading = '', Requests = [] }) => {
         {
           Requests.map((request) => {
             return (
-              <Pendingtranhistory key={request.withdrawId} request={request} />
+              <Pendingtranhistory key={request.withdrawId} request={request} approved={approved} />
             )
           })
         }

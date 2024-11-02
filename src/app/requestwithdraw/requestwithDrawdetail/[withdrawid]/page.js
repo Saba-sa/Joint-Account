@@ -1,5 +1,7 @@
 "use client";
+import { accountHistory } from '@/app/store/actions';
 import { AppContext } from '@/app/store/AppContext';
+import { ethers } from 'ethers';
 import { useParams } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 
@@ -18,7 +20,6 @@ const RequestDetail = () => {
 
   const fetchDetails = async () => {
     const temp = await state.contract.seeWithDrawRequest(Number(state.activeAccount.id), Number(withdrawid));
-    console.log('heelo wolrd', temp)
 
     setRequestDetails({
       withdrawRequesterAddr: temp[0],
@@ -38,6 +39,7 @@ const RequestDetail = () => {
 
   const setApproval = async () => {
     try {
+
       const withdrawIdNumber = Number(withdrawid);
       const activeAccountId = Number(state.activeAccount.id);
 
@@ -45,13 +47,41 @@ const RequestDetail = () => {
         throw new Error('Invalid parameters');
       }
 
-      const temp = await state.contract.approveWithdrawl(activeAccountId, withdrawIdNumber);
+      const signer = new ethers.Wallet("0x9a1be89fc702062d512c58ef7244b1a03af0c10eec2102e009b1c26ca961511e", state.provider);
+
+      // Reconnect the contract instance with the new signer
+      console.log('signer', signer)
+      const contractWithSigner = state.contract.connect(signer);
+      console.log('sdsdsdfs', contractWithSigner)
+
+
+
+      const temp = await contractWithSigner.approveWithdrawl(activeAccountId, withdrawIdNumber, {
+        gasLimit: 100000 // Adjust as necessary
+      });
+      // const temp = await state.contract.approveWithdrawl(activeAccountId, withdrawIdNumber);
       await temp.wait();
+      console.log('temp', temp)
       if (temp) {
         fetchDetails();
+        const history = [
+          ...state.accountHistory,
+          `${signer.address.slice(0, 5)}...${signer.address.slice(-3)} approved the withdraw request ${withdrawIdNumber}`,
+        ];
+        dispatch(accountHistory(history));
       }
     } catch (error) {
-      console.error('Error approving withdrawal:', error);
+      let revertMessage = "Transaction failed without a clear revert reason.";
+
+      if (error.data?.reason) {
+        revertMessage = error.data.reason; // Get direct reason if available
+      } else if (error.data?.message) {
+        revertMessage = error.data.message;
+      } else if (error.message && error.message.includes("revert")) {
+        revertMessage = error.message.split("revert")[1]?.trim();
+      }
+
+      console.error("Revert message:", revertMessage);
     }
   };
 
@@ -70,7 +100,7 @@ const RequestDetail = () => {
               href="https://www.material-tailwind.com/docs/html/card"
               className="block w-full px-4 py-2 text-center text-slate-700 transition-all"
             >
-              Withdraw Requests id is:<b>{withdrawid}</b>.
+              Withdraw Requests id is:<b>{Number(withdrawid) + 1}</b>.
             </a>
           </div>
 

@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../store/AppContext";
 import { ethers, parseUnits } from "ethers";
 import { accountHistory, loadAccount } from "../store/actions";
@@ -11,37 +11,50 @@ const Deposit = () => {
     value: "value must be in wei"
   });
 
+
   const depositFunds = async () => {
     if (state.contract) {
-
       try {
-        const result = await state.contract.deposit(state.activeAccount.id, {
+        const signer = new ethers.Wallet(depositDetail.address, state.provider);
+
+        // Reconnect the contract instance with the new signer
+        const contractWithSigner = state.contract.connect(signer);
+
+        console.log('Attempting deposit with address:', await signer.getAddress());
+
+
+        const result = await contractWithSigner.deposit(state.activeAccount.id, {
+        // const result = await state.contract.deposit(state.activeAccount.id, {
           value: parseUnits(depositDetail.value, "wei"),
         });
+        console.log('Deposited result', result);
         const t = await result.wait();
+        console.log(t, "FInal Result")
+
         if (t) {
-          const balanceAmt = await state.contract.getBalance(state.activeAccount.id)
+          const balanceAmt = await contractWithSigner.getBalance(state.activeAccount.id);
+          // const balanceAmt = await state.contract.getBalance(state.activeAccount.id);
           const updatedActiveAccount = {
             ...state.activeAccount,
-            balance: balanceAmt
+            balance: balanceAmt,
           };
           dispatch(loadAccount(updatedActiveAccount));
           const history = [
             ...state.accountHistory,
-            `${depositDetail.address.slice(0, 5)}...${depositDetail.address.slice(-3)} deposited ${depositDetail.value} wei`
+            `${depositDetail.address.slice(0, 5)}...${depositDetail.address.slice(-3)} deposited ${depositDetail.value} wei`,
           ];
           dispatch(accountHistory(history));
           setDepositDetail({
-            address: '0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
-            value: "value must be in wei"
+            address: '',
+            value: '',
           });
-
         }
       } catch (error) {
-        console.error("Error in depositFunds:", error);
+        console.error("Error:", error);
       }
     }
   }
+
 
   return (
     <div className="bg-blue-100 h-[100vh] p-8">

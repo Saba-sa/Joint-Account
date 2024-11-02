@@ -91,7 +91,9 @@ const Sidebar = () => {
 
         <nav className="flex  h-auto bg-white shadow-lg rounded-lg justify-end md:h-16">
           <div className="hidden w-1/5 items-center justify-evenly font-semibold md:flex">
-            <button>Deposit</button>
+            <button onClick={() => {
+              route.push('/deposit')
+            }}>Deposit</button>
             <button onClick={() => {
               route.push('/requestwithdraw')
             }}>Withdraw</button>
